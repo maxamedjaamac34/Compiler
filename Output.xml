@@ -1,0 +1,783 @@
+//The result of the compiler should be similar to this one. 
+
+<class>
+<keyword> class </keyword>
+<identifier> Point </identifier>
+<symbol> { </symbol>
+...
+<subroutineDec>
+<keyword> method </keyword>
+<keyword> int </keyword>
+<identifier> getx </identifier>
+<symbol> ( </symbol>
+<parameterList>
+</parameterList>
+<symbol> ) </symbol>
+<subroutineBody>
+<symbol> { </symbol>
+<statements>
+<returnStatement>
+<keyword> return </keyword>
+<expression>
+<term>
+
+<identifier> x </identifier>
+</term>
+</expression>
+<symbol> ; </symbol>
+</returnStatement>
+</statements>
+<symbol> } </symbol>
+</subroutineBody>
+</subroutineDec>
+...
+<symbol> } </symbol>
+<class>
+
+
+
+<!-- the code now returns the following xml which does not start with <class> -->
+
+<keyword> class </keyword>
+<identifier> Square </identifier>
+<symbol> { </symbol>
+<classVarDec>
+   <keyword> field </keyword>
+   <keyword> int </keyword>
+   <identifier> x </identifier>
+   <symbol> , </symbol>
+   <identifier> t </identifier>
+   <symbol> , </symbol>
+   <identifier> y </identifier>
+   <symbol> ; </symbol>
+</classVarDec>
+<classVarDec>
+   <keyword> field </keyword>
+   <keyword> int </keyword>
+   <identifier> size </identifier>
+   <symbol> ; </symbol>
+</classVarDec>
+<keyword> constructor </keyword>
+<identifier> Square </identifier>
+<identifier> new </identifier>
+<symbol> ( </symbol>
+<parameterList>
+   <keyword> int </keyword>
+   <identifier> Ax </identifier>
+   <symbol> , </symbol>
+   <keyword> int </keyword>
+   <identifier> Ay </identifier>
+   <symbol> , </symbol>
+   <keyword> int </keyword>
+   <identifier> Asize </identifier>
+</parameterList>
+<symbol> ) </symbol>
+<symbol> { </symbol>
+<statement>
+   <letStatement>
+      <keyword> let </keyword>
+      <identifier> x </identifier>
+      <symbol> = </symbol>
+      <identifier> Ax </identifier>
+      <symbol> ; </symbol>
+   </letStatement>
+</statement>
+<statement>
+   <letStatement>
+      <keyword> let </keyword>
+      <identifier> y </identifier>
+      <symbol> = </symbol>
+      <identifier> Ay </identifier>
+      <symbol> ; </symbol>
+   </letStatement>
+</statement>
+<statement>
+   <letStatement>
+      <keyword> let </keyword>
+      <identifier> size </identifier>
+      <symbol> = </symbol>
+      <identifier> Asize </identifier>
+      <symbol> ; </symbol>
+   </letStatement>
+</statement>
+<statement>
+   <doStatement>
+      <keyword> do </keyword>
+      <subroutineCall>
+         <identifier> draw </identifier>
+         <symbol> ( </symbol>
+         <symbol> ) </symbol>
+      </subroutineCall>
+      <symbol> ; </symbol>
+   </doStatement>
+</statement>
+<statement>
+   <returnStatement>
+      <keyword> return </keyword>
+      <identifier> x </identifier>
+      <symbol> ; </symbol>
+   </returnStatement>
+</statement>
+<symbol> } </symbol>
+<keyword> method </keyword>
+<keyword> void </keyword>
+<subroutineCall>
+   <identifier> dispose </identifier>
+   <symbol> ( </symbol>
+   <symbol> ) </symbol>
+</subroutineCall>
+<symbol> { </symbol>
+<statement>
+   <doStatement>
+      <keyword> do </keyword>
+      <subroutineCall>
+         <identifier> Memory </identifier>
+         <symbol> . </symbol>
+         <identifier> deAlloc </identifier>
+         <symbol> ( </symbol>
+         <keyword> this </keyword>
+         <symbol> ) </symbol>
+      </subroutineCall>
+      <symbol> ; </symbol>
+   </doStatement>
+</statement>
+<statement>
+   <returnStatement>
+      <keyword> return </keyword>
+      <symbol> ; </symbol>
+   </returnStatement>
+</statement>
+<symbol> } </symbol>
+<keyword> method </keyword>
+<keyword> void </keyword>
+<subroutineCall>
+   <identifier> draw </identifier>
+   <symbol> ( </symbol>
+   <symbol> ) </symbol>
+</subroutineCall>
+<symbol> { </symbol>
+<statement>
+   <doStatement>
+      <keyword> do </keyword>
+      <subroutineCall>
+         <identifier> Screen </identifier>
+         <symbol> . </symbol>
+         <identifier> setColor </identifier>
+         <symbol> ( </symbol>
+         <identifier> x </identifier>
+         <symbol> ) </symbol>
+      </subroutineCall>
+      <symbol> ; </symbol>
+   </doStatement>
+</statement>
+<statement>
+   <doStatement>
+      <keyword> do </keyword>
+      <subroutineCall>
+         <identifier> Screen </identifier>
+         <symbol> . </symbol>
+         <identifier> drawRectangle </identifier>
+         <symbol> ( </symbol>
+         <identifier> x </identifier>
+         <symbol> , </symbol>
+         <identifier> y </identifier>
+         <symbol> , </symbol>
+         <identifier> x </identifier>
+         <symbol> , </symbol>
+         <identifier> y </identifier>
+         <symbol> ) </symbol>
+      </subroutineCall>
+      <symbol> ; </symbol>
+   </doStatement>
+</statement>
+<statement>
+   <returnStatement>
+      <keyword> return </keyword>
+      <symbol> ; </symbol>
+   </returnStatement>
+</statement>
+<symbol> } </symbol>
+<keyword> method </keyword>
+<keyword> void </keyword>
+<subroutineCall>
+   <identifier> erase </identifier>
+   <symbol> ( </symbol>
+   <symbol> ) </symbol>
+</subroutineCall>
+<symbol> { </symbol>
+<statement>
+   <doStatement>
+      <keyword> do </keyword>
+      <subroutineCall>
+         <identifier> Screen </identifier>
+         <symbol> . </symbol>
+         <identifier> setColor </identifier>
+         <symbol> ( </symbol>
+         <identifier> x </identifier>
+         <symbol> ) </symbol>
+      </subroutineCall>
+      <symbol> ; </symbol>
+   </doStatement>
+</statement>
+<statement>
+   <doStatement>
+      <keyword> do </keyword>
+      <subroutineCall>
+         <identifier> Screen </identifier>
+         <symbol> . </symbol>
+         <identifier> drawRectangle </identifier>
+         <symbol> ( </symbol>
+         <identifier> x </identifier>
+         <symbol> , </symbol>
+         <identifier> y </identifier>
+         <symbol> , </symbol>
+         <identifier> x </identifier>
+         <symbol> , </symbol>
+         <identifier> y </identifier>
+         <symbol> ) </symbol>
+      </subroutineCall>
+      <symbol> ; </symbol>
+   </doStatement>
+</statement>
+<statement>
+   <returnStatement>
+      <keyword> return </keyword>
+      <symbol> ; </symbol>
+   </returnStatement>
+</statement>
+<symbol> } </symbol>
+<keyword> method </keyword>
+<keyword> void </keyword>
+<subroutineCall>
+   <identifier> incSize </identifier>
+   <symbol> ( </symbol>
+   <symbol> ) </symbol>
+</subroutineCall>
+<symbol> { </symbol>
+<statement>
+   <ifStatement>
+      <keyword> if </keyword>
+      <symbol> ( </symbol>
+      <identifier> x </identifier>
+      <symbol> ) </symbol>
+      <symbol> { </symbol>
+      <statement>
+         <doStatement>
+            <keyword> do </keyword>
+            <subroutineCall>
+               <identifier> erase </identifier>
+               <symbol> ( </symbol>
+               <symbol> ) </symbol>
+            </subroutineCall>
+            <symbol> ; </symbol>
+         </doStatement>
+      </statement>
+      <statement>
+         <letStatement>
+            <keyword> let </keyword>
+            <identifier> size </identifier>
+            <symbol> = </symbol>
+            <identifier> size </identifier>
+            <symbol> ; </symbol>
+         </letStatement>
+      </statement>
+      <statement>
+         <doStatement>
+            <keyword> do </keyword>
+            <subroutineCall>
+               <identifier> draw </identifier>
+               <symbol> ( </symbol>
+               <symbol> ) </symbol>
+            </subroutineCall>
+            <symbol> ; </symbol>
+         </doStatement>
+      </statement>
+      <symbol> } </symbol>
+   </ifStatement>
+</statement>
+<statement>
+   <returnStatement>
+      <keyword> return </keyword>
+      <symbol> ; </symbol>
+   </returnStatement>
+</statement>
+<symbol> } </symbol>
+<keyword> method </keyword>
+<keyword> void </keyword>
+<subroutineCall>
+   <identifier> decSize </identifier>
+   <symbol> ( </symbol>
+   <symbol> ) </symbol>
+</subroutineCall>
+<symbol> { </symbol>
+<statement>
+   <ifStatement>
+      <keyword> if </keyword>
+      <symbol> ( </symbol>
+      <identifier> size </identifier>
+      <symbol> ) </symbol>
+      <symbol> { </symbol>
+      <statement>
+         <doStatement>
+            <keyword> do </keyword>
+            <subroutineCall>
+               <identifier> erase </identifier>
+               <symbol> ( </symbol>
+               <symbol> ) </symbol>
+            </subroutineCall>
+            <symbol> ; </symbol>
+         </doStatement>
+      </statement>
+      <statement>
+         <letStatement>
+            <keyword> let </keyword>
+            <identifier> size </identifier>
+            <symbol> = </symbol>
+            <identifier> size </identifier>
+            <symbol> ; </symbol>
+         </letStatement>
+      </statement>
+      <statement>
+         <doStatement>
+            <keyword> do </keyword>
+            <subroutineCall>
+               <identifier> draw </identifier>
+               <symbol> ( </symbol>
+               <symbol> ) </symbol>
+            </subroutineCall>
+            <symbol> ; </symbol>
+         </doStatement>
+      </statement>
+      <symbol> } </symbol>
+   </ifStatement>
+</statement>
+<statement>
+   <returnStatement>
+      <keyword> return </keyword>
+      <symbol> ; </symbol>
+   </returnStatement>
+</statement>
+<symbol> } </symbol>
+<keyword> method </keyword>
+<keyword> void </keyword>
+<subroutineCall>
+   <identifier> moveUp </identifier>
+   <symbol> ( </symbol>
+   <symbol> ) </symbol>
+</subroutineCall>
+<symbol> { </symbol>
+<statement>
+   <ifStatement>
+      <keyword> if </keyword>
+      <symbol> ( </symbol>
+      <identifier> y </identifier>
+      <symbol> ) </symbol>
+      <symbol> { </symbol>
+      <statement>
+         <doStatement>
+            <keyword> do </keyword>
+            <subroutineCall>
+               <identifier> Screen </identifier>
+               <symbol> . </symbol>
+               <identifier> setColor </identifier>
+               <symbol> ( </symbol>
+               <identifier> x </identifier>
+               <symbol> ) </symbol>
+            </subroutineCall>
+            <symbol> ; </symbol>
+         </doStatement>
+      </statement>
+      <statement>
+         <doStatement>
+            <keyword> do </keyword>
+            <subroutineCall>
+               <identifier> Screen </identifier>
+               <symbol> . </symbol>
+               <identifier> drawRectangle </identifier>
+               <symbol> ( </symbol>
+               <identifier> x </identifier>
+               <symbol> , </symbol>
+               <identifier> y </identifier>
+               <symbol> , </symbol>
+               <identifier> x </identifier>
+               <symbol> , </symbol>
+               <identifier> y </identifier>
+               <symbol> ) </symbol>
+            </subroutineCall>
+            <symbol> ; </symbol>
+         </doStatement>
+      </statement>
+      <statement>
+         <letStatement>
+            <keyword> let </keyword>
+            <identifier> y </identifier>
+            <symbol> = </symbol>
+            <identifier> y </identifier>
+            <symbol> ; </symbol>
+         </letStatement>
+      </statement>
+      <statement>
+         <doStatement>
+            <keyword> do </keyword>
+            <subroutineCall>
+               <identifier> Screen </identifier>
+               <symbol> . </symbol>
+               <identifier> setColor </identifier>
+               <symbol> ( </symbol>
+               <identifier> x </identifier>
+               <symbol> ) </symbol>
+            </subroutineCall>
+            <symbol> ; </symbol>
+         </doStatement>
+      </statement>
+      <statement>
+         <doStatement>
+            <keyword> do </keyword>
+            <subroutineCall>
+               <identifier> Screen </identifier>
+               <symbol> . </symbol>
+               <identifier> drawRectangle </identifier>
+               <symbol> ( </symbol>
+               <identifier> x </identifier>
+               <symbol> , </symbol>
+               <identifier> y </identifier>
+               <symbol> , </symbol>
+               <identifier> x </identifier>
+               <symbol> , </symbol>
+               <identifier> y </identifier>
+               <symbol> ) </symbol>
+            </subroutineCall>
+            <symbol> ; </symbol>
+         </doStatement>
+      </statement>
+      <symbol> } </symbol>
+   </ifStatement>
+</statement>
+<statement>
+   <returnStatement>
+      <keyword> return </keyword>
+      <symbol> ; </symbol>
+   </returnStatement>
+</statement>
+<symbol> } </symbol>
+<keyword> method </keyword>
+<keyword> void </keyword>
+<subroutineCall>
+   <identifier> moveDown </identifier>
+   <symbol> ( </symbol>
+   <symbol> ) </symbol>
+</subroutineCall>
+<symbol> { </symbol>
+<statement>
+   <ifStatement>
+      <keyword> if </keyword>
+      <symbol> ( </symbol>
+      <identifier> y </identifier>
+      <symbol> ) </symbol>
+      <symbol> { </symbol>
+      <statement>
+         <doStatement>
+            <keyword> do </keyword>
+            <subroutineCall>
+               <identifier> Screen </identifier>
+               <symbol> . </symbol>
+               <identifier> setColor </identifier>
+               <symbol> ( </symbol>
+               <identifier> x </identifier>
+               <symbol> ) </symbol>
+            </subroutineCall>
+            <symbol> ; </symbol>
+         </doStatement>
+      </statement>
+      <statement>
+         <doStatement>
+            <keyword> do </keyword>
+            <subroutineCall>
+               <identifier> Screen </identifier>
+               <symbol> . </symbol>
+               <identifier> drawRectangle </identifier>
+               <symbol> ( </symbol>
+               <identifier> x </identifier>
+               <symbol> , </symbol>
+               <identifier> y </identifier>
+               <symbol> , </symbol>
+               <identifier> x </identifier>
+               <symbol> , </symbol>
+               <identifier> y </identifier>
+               <symbol> ) </symbol>
+            </subroutineCall>
+            <symbol> ; </symbol>
+         </doStatement>
+      </statement>
+      <statement>
+         <letStatement>
+            <keyword> let </keyword>
+            <identifier> y </identifier>
+            <symbol> = </symbol>
+            <identifier> y </identifier>
+            <symbol> ; </symbol>
+         </letStatement>
+      </statement>
+      <statement>
+         <doStatement>
+            <keyword> do </keyword>
+            <subroutineCall>
+               <identifier> Screen </identifier>
+               <symbol> . </symbol>
+               <identifier> setColor </identifier>
+               <symbol> ( </symbol>
+               <identifier> x </identifier>
+               <symbol> ) </symbol>
+            </subroutineCall>
+            <symbol> ; </symbol>
+         </doStatement>
+      </statement>
+      <statement>
+         <doStatement>
+            <keyword> do </keyword>
+            <subroutineCall>
+               <identifier> Screen </identifier>
+               <symbol> . </symbol>
+               <identifier> drawRectangle </identifier>
+               <symbol> ( </symbol>
+               <identifier> x </identifier>
+               <symbol> , </symbol>
+               <identifier> y </identifier>
+               <symbol> , </symbol>
+               <identifier> x </identifier>
+               <symbol> , </symbol>
+               <identifier> y </identifier>
+               <symbol> ) </symbol>
+            </subroutineCall>
+            <symbol> ; </symbol>
+         </doStatement>
+      </statement>
+      <symbol> } </symbol>
+   </ifStatement>
+</statement>
+<statement>
+   <returnStatement>
+      <keyword> return </keyword>
+      <symbol> ; </symbol>
+   </returnStatement>
+</statement>
+<symbol> } </symbol>
+<keyword> method </keyword>
+<keyword> void </keyword>
+<subroutineCall>
+   <identifier> moveLeft </identifier>
+   <symbol> ( </symbol>
+   <symbol> ) </symbol>
+</subroutineCall>
+<symbol> { </symbol>
+<statement>
+   <ifStatement>
+      <keyword> if </keyword>
+      <symbol> ( </symbol>
+      <identifier> x </identifier>
+      <symbol> ) </symbol>
+      <symbol> { </symbol>
+      <statement>
+         <doStatement>
+            <keyword> do </keyword>
+            <subroutineCall>
+               <identifier> Screen </identifier>
+               <symbol> . </symbol>
+               <identifier> setColor </identifier>
+               <symbol> ( </symbol>
+               <identifier> x </identifier>
+               <symbol> ) </symbol>
+            </subroutineCall>
+            <symbol> ; </symbol>
+         </doStatement>
+      </statement>
+      <statement>
+         <doStatement>
+            <keyword> do </keyword>
+            <subroutineCall>
+               <identifier> Screen </identifier>
+               <symbol> . </symbol>
+               <identifier> drawRectangle </identifier>
+               <symbol> ( </symbol>
+               <identifier> x </identifier>
+               <symbol> , </symbol>
+               <identifier> y </identifier>
+               <symbol> , </symbol>
+               <identifier> x </identifier>
+               <symbol> , </symbol>
+               <identifier> y </identifier>
+               <symbol> ) </symbol>
+            </subroutineCall>
+            <symbol> ; </symbol>
+         </doStatement>
+      </statement>
+      <statement>
+         <letStatement>
+            <keyword> let </keyword>
+            <identifier> x </identifier>
+            <symbol> = </symbol>
+            <identifier> x </identifier>
+            <symbol> ; </symbol>
+         </letStatement>
+      </statement>
+      <statement>
+         <doStatement>
+            <keyword> do </keyword>
+            <subroutineCall>
+               <identifier> Screen </identifier>
+               <symbol> . </symbol>
+               <identifier> setColor </identifier>
+               <symbol> ( </symbol>
+               <identifier> x </identifier>
+               <symbol> ) </symbol>
+            </subroutineCall>
+            <symbol> ; </symbol>
+         </doStatement>
+      </statement>
+      <statement>
+         <doStatement>
+            <keyword> do </keyword>
+            <subroutineCall>
+               <identifier> Screen </identifier>
+               <symbol> . </symbol>
+               <identifier> drawRectangle </identifier>
+               <symbol> ( </symbol>
+               <identifier> x </identifier>
+               <symbol> , </symbol>
+               <identifier> y </identifier>
+               <symbol> , </symbol>
+               <identifier> x </identifier>
+               <symbol> , </symbol>
+               <identifier> y </identifier>
+               <symbol> ) </symbol>
+            </subroutineCall>
+            <symbol> ; </symbol>
+         </doStatement>
+      </statement>
+      <symbol> } </symbol>
+   </ifStatement>
+</statement>
+<statement>
+   <returnStatement>
+      <keyword> return </keyword>
+      <symbol> ; </symbol>
+   </returnStatement>
+</statement>
+<symbol> } </symbol>
+<keyword> method </keyword>
+<keyword> void </keyword>
+<subroutineCall>
+   <identifier> moveRight </identifier>
+   <symbol> ( </symbol>
+   <symbol> ) </symbol>
+</subroutineCall>
+<symbol> { </symbol>
+<statement>
+   <ifStatement>
+      <keyword> if </keyword>
+      <symbol> ( </symbol>
+      <identifier> x </identifier>
+      <symbol> ) </symbol>
+      <symbol> { </symbol>
+      <statement>
+         <doStatement>
+            <keyword> do </keyword>
+            <subroutineCall>
+               <identifier> Screen </identifier>
+               <symbol> . </symbol>
+               <identifier> setColor </identifier>
+               <symbol> ( </symbol>
+               <identifier> x </identifier>
+               <symbol> ) </symbol>
+            </subroutineCall>
+            <symbol> ; </symbol>
+         </doStatement>
+      </statement>
+      <statement>
+         <doStatement>
+            <keyword> do </keyword>
+            <subroutineCall>
+               <identifier> Screen </identifier>
+               <symbol> . </symbol>
+               <identifier> drawRectangle </identifier>
+               <symbol> ( </symbol>
+               <identifier> x </identifier>
+               <symbol> , </symbol>
+               <identifier> y </identifier>
+               <symbol> , </symbol>
+               <identifier> x </identifier>
+               <symbol> , </symbol>
+               <identifier> y </identifier>
+               <symbol> ) </symbol>
+            </subroutineCall>
+            <symbol> ; </symbol>
+         </doStatement>
+      </statement>
+      <statement>
+         <letStatement>
+            <keyword> let </keyword>
+            <identifier> x </identifier>
+            <symbol> = </symbol>
+            <identifier> x </identifier>
+            <symbol> ; </symbol>
+         </letStatement>
+      </statement>
+      <statement>
+         <doStatement>
+            <keyword> do </keyword>
+            <subroutineCall>
+               <identifier> Screen </identifier>
+               <symbol> . </symbol>
+               <identifier> setColor </identifier>
+               <symbol> ( </symbol>
+               <identifier> x </identifier>
+               <symbol> ) </symbol>
+            </subroutineCall>
+            <symbol> ; </symbol>
+         </doStatement>
+      </statement>
+      <statement>
+         <doStatement>
+            <keyword> do </keyword>
+            <subroutineCall>
+               <identifier> Screen </identifier>
+               <symbol> . </symbol>
+               <identifier> drawRectangle </identifier>
+               <symbol> ( </symbol>
+               <identifier> x </identifier>
+               <symbol> , </symbol>
+               <identifier> y </identifier>
+               <symbol> , </symbol>
+               <identifier> x </identifier>
+               <symbol> , </symbol>
+               <identifier> y </identifier>
+               <symbol> ) </symbol>
+            </subroutineCall>
+            <symbol> ; </symbol>
+         </doStatement>
+      </statement>
+      <symbol> } </symbol>
+   </ifStatement>
+</statement>
+<statement>
+   <returnStatement>
+      <keyword> return </keyword>
+      <symbol> ; </symbol>
+   </returnStatement>
+</statement>
+<symbol> } </symbol>
+<symbol> } </symbol>
+<parameterList>
+</parameterList>
+<parameterList>
+</parameterList>
+<parameterList>
+</parameterList>
+<parameterList>
+</parameterList>
+<parameterList>
+</parameterList>
+<parameterList>
+</parameterList>
+<parameterList>
+</parameterList>
