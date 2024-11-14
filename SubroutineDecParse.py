@@ -5,7 +5,7 @@ from SubroutineBodyParse import SubroutineBodyParse
 
 class SubroutineDecParse(ProgramStructure):
     parsing_structure_type = "subroutineDec"
-    def __init__(self, subroutine, void_or_type, subroutine_name, open_parenthesis, parameter_list, close_parenthesis, subroutine_body, *args):
+    def __init__(self, subroutine, void_or_type, subroutine_name, open_parenthesis, *args):
         # args does nothing, this is so it accepts trailing tokens
         if not (isinstance(subroutine, Token) and subroutine.tokenType == "keyword" and subroutine.tokenValue in ["constructor", "function", "method"]):
             raise ValueError("Subroutine must be the keyword constructor, function, or method")
@@ -15,10 +15,19 @@ class SubroutineDecParse(ProgramStructure):
             raise ValueError("subroutine_name must be a SubroutineNameParse object")
         if not (isinstance(open_parenthesis,Token) and open_parenthesis.tokenType == "symbol" and open_parenthesis.tokenValue == "("):
             raise ValueError("open_parenthesis must be symbol Token '('")
-        if not isinstance(parameter_list, ParameterListParse):
-            raise ValueError("parameter_list must be ParameterListParse object")
-        if not (isinstance(close_parenthesis, Token) and close_parenthesis.tokenType == "symbol" and close_parenthesis.tokenValue == ")"):
-            raise ValueError("close_parenthesis must be symbol Token ')'")
-        if not isinstance(subroutine_body, SubroutineBodyParse):
-            raise ValueError("subroutine_body must be SubroutineBodyParse object")
-        self.objects = [subroutine, void_or_type, open_parenthesis, parameter_list, close_parenthesis, subroutine_body]
+        self.objects = [subroutine, void_or_type, subroutine_name, open_parenthesis]
+        close_parenthesis = False # whether there has been a close parenthesis or not
+        subroutine_body = False # whether there has been a subroutineBody or not
+        for arg in args:
+            if isinstance(arg, ParameterListParse) and not close_parenthesis and not subroutine_body:
+                self.objects.append(arg)
+            elif isinstance(arg, Token) and arg.tokenType == "symbol" and arg.tokenValue == ")":
+                close_parenthesis = True
+                self.objects.append(arg)
+            elif isinstance(arg, SubroutineBodyParse) and close_parenthesis and not subroutine_body:
+                subroutine_body = True
+                self.objects.append(arg)
+            elif close_parenthesis and subroutine_body:
+                break
+            else:
+                raise ValueError("args must be ) parameterList? subroutineBody")

@@ -12,8 +12,6 @@ class ParameterListParse(ProgramStructure):
         valid_types = ["int", "char", "boolean"] #declaring the valid types that we need for Parameter List
         # so that both the starting parameter and the rest can be processed the same
         for arg in args:
-            if arg is None: # This can be empty!
-                pass
             if isinstance(arg, Token) and arg.tokenType == "symbol" and arg.tokenValue == "," and not comma and not parameter_type and var_dec:
                 var_dec = False
                 comma = True

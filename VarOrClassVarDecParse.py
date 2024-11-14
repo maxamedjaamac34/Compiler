@@ -1,5 +1,7 @@
 from ProgramStructureParseClasses import ProgramStructure
 from ParserClasses import Token
+from SubroutineCallParse import SubroutineCallParse
+
 
 class VarOrClassVarDecParse(ProgramStructure):
     # Super class to VarDecParse and ClassVarDecParse because they are almost exactly the same
@@ -20,10 +22,7 @@ class VarOrClassVarDecParse(ProgramStructure):
         comma = False # Whether the last token at the time of evaluating was a comma symbol Token
         semicolon = False # Whether the last token at the time of evaluating was a semicolon symbol Token
         for arg in args:
-            if isinstance(arg, Token) and arg.tokenType == "symbol" and arg.tokenValue == ";" and var_dec and not semicolon:
-                semicolon = True
-                self.objects.append(arg)
-            elif isinstance(arg, Token) and arg.tokenType == "symbol" and arg.tokenValue == "," and var_dec and not semicolon:
+            if isinstance(arg, Token) and arg.tokenType == "symbol" and arg.tokenValue == "," and not semicolon:
                 comma = True
                 var_dec = False
                 self.objects.append(arg)

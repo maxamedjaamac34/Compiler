@@ -1,4 +1,4 @@
-from JackParser.SubroutineBodyParse import SubroutineBodyParse
+from SubroutineBodyParse import SubroutineBodyParse
 from ParserClasses import Token
 from ClassParse import ClassParse
 from VarOrClassVarDecParse import VarDecParse
@@ -8,9 +8,9 @@ from LetStatementParse import LetStatementParse
 from ReturnStatementParse import ReturnStatementParse
 from WhileStatementParse import WhileStatementParse
 from DoStatementParse import DoStatementParse
-from SubroutineCallParse import SubroutineCallParse
-from VarOrClassVarDecParse import ClassVarDecParse
 from SubroutineDecParse import SubroutineDecParse
+from VarOrClassVarDecParse import ClassVarDecParse
+from SubroutineCallParse import SubroutineCallParse
 from ExpressionListParse import ExpressionListParse
 from StatementParse import StatementParse
 from StatementsParse import StatementsParse
@@ -43,7 +43,10 @@ def try_parse(parse_class, objects: list, print_try_progress):
             if not (isinstance(matched, StatementsParse) and matched.objects == []):
                 objects = objects[:l] + parse_objects
                 objects.insert(l, matched) # Adds the instance of parse_class that matched refers to, to the front of the list
-                continue
+                if isinstance(matched, StatementParse):
+                    continue
+                else:
+                    break
         except (ValueError, TypeError) as e:
             # Specific handling for ValueError and TypeError
             if print_try_progress:
@@ -62,18 +65,18 @@ def parse_jack_class(tokens: list, print_parse_progress):
     class_fully_parsed = False
     class_objects = tokens
     parsing_structures = [
+        SubroutineBodyParse,
+        SubroutineDecParse,
+        ParameterListParse,
         VarDecParse,
         ClassVarDecParse,
         StatementParse,
-        SubroutineCallParse,
         LetStatementParse,
         DoStatementParse,
         ReturnStatementParse,
         IfStatementParse,
         WhileStatementParse,
-        SubroutineBodyParse,
-        ParameterListParse,  # If not empty, requires type varName (, type varname)* ;
-        SubroutineDecParse,
+        SubroutineCallParse, # If not empty, requires type varName (, type varname)* ;
 
         # ExpressionListParse, # If not empty, requires expression (, expression)*
         # ExpressionParse, # Placeholder is trivial - only an identifier
