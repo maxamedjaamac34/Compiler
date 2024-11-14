@@ -5,19 +5,14 @@ from VarOrClassVarDecParse import VarDecParse, ClassVarDecParse
 
 class SubroutineBodyParse(ProgramStructure):
     parsing_structure_type = "subroutineBody"
-    def __init__(self, *args):
-        
-        statements = False # whether a statements object has been given (can no longer give more var decs
-        end_brace = False
-        #start_brace = False # whether an end brace has been given,, not sure if we need this
-        self.objects = []
-        
+    def __init__(self, start_brace, *args):
+        if not (isinstance(start_brace, Token) and start_brace.tokenType == "symbol" and start_brace.tokenValue == "{"):
+            # print(start_brace)
+            raise ValueError("Subroutine body must start with symbol token {")
+        end_brace = False # whether an end brace has been given
+        self.objects = [start_brace]
+        # print(self.objects)
         for arg in args:
-
-            if (isinstance(arg, Token) and arg.tokenType == "symbol" and arg.tokenValue == "{"):
-                #start_brace = True
-                self.objects.append(arg)
-
             if isinstance(arg, Token) and arg.tokenType == "symbol" and arg.tokenValue == "}" and not end_brace:
                 end_brace = True
                 self.objects.append(arg)
@@ -28,8 +23,8 @@ class SubroutineBodyParse(ProgramStructure):
             elif end_brace:
                 break # to accept trailing tokens
             else:
+                #print("could not make subroutine body")
+                #print(str(arg))
                 raise ValueError("Subroutine body must be {varDec* statement*}")
         if not end_brace:
             raise ValueError("Subroutine body must end with }")
-        if not statements:
-            raise ValueError("Subroutine body must have statements")

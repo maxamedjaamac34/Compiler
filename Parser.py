@@ -1,4 +1,4 @@
-from SubroutineBodyParse import SubroutineBodyParse
+from JackParser.SubroutineBodyParse import SubroutineBodyParse
 from ParserClasses import Token
 from ClassParse import ClassParse
 from VarOrClassVarDecParse import VarDecParse
@@ -65,17 +65,15 @@ def parse_jack_class(tokens: list, print_parse_progress):
         VarDecParse,
         ClassVarDecParse,
         StatementParse,
-        ParameterListParse,
-        SubroutineBodyParse,
         SubroutineCallParse,
-        SubroutineDecParse,
         LetStatementParse,
         DoStatementParse,
         ReturnStatementParse,
         IfStatementParse,
         WhileStatementParse,
+        SubroutineBodyParse,
+        ParameterListParse,  # If not empty, requires type varName (, type varname)* ;
         SubroutineDecParse,
-        # ParameterListParse, # If not empty, requires type varName (, type varname)* ;
 
         # ExpressionListParse, # If not empty, requires expression (, expression)*
         # ExpressionParse, # Placeholder is trivial - only an identifier
@@ -87,7 +85,7 @@ def parse_jack_class(tokens: list, print_parse_progress):
         # but that sort of trivial does not break try_parse
     ]
 
-    for i in range(100):
+    for i in range(1000):
         try:
             if print_parse_progress:
                 print("Trying to parse the class")

@@ -28,13 +28,3 @@ class ClassParse(ProgramStructure):
                 raise ValueError("classes are in the format of class className {classVarDecs*, subroutineDecs*}")
         if not close_brace:
             raise ValueError("Class must end with }")
-
-    def to_xml(self):#to make xml
-        xml_output = "<class>\n"
-        for obj in self.objects:
-            if isinstance(obj, Token):
-                xml_output += f"<{obj.tokenType}> {obj.tokenValue} </{obj.tokenType}>\n"
-            elif hasattr(obj, 'to_xml'):
-                xml_output += obj.to_xml()
-        xml_output += "</class>\n"
-        return xml_output
