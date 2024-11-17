@@ -11,9 +11,10 @@ class Expression(ParsingStructure):
 class ExpressionParse(ParsingStructure):
     parsing_structure_type = "expression"
     # Placeholder - expressions are replaced with identifiers in the Expressionless versions of test files
-    def __init__(self, *args): # args does nothing, just so it can accept trailing tokens
-        if isinstance(args[0], Token) and args[0].tokenType == "identifier":
-            self.objects = [args[0]]
+    def __init__(self, *args):
+        arg_l = list(args)
+        if isinstance(arg_l[0], Token) and arg_l[0].tokenType == "identifier":
+            self.objects = [arg_l[0]]
         else:
             raise ParsingStructureNotFound("identifier must be an identifier Token")
 
@@ -61,7 +62,6 @@ class SubroutineCallParse(Expression):
         if isinstance(arg_l[1], Token) and arg_l[1].tokenType == "symbol" and arg_l[1].tokenValue == "(":
             self.objects.append(SubroutineNameParse(arg_l[0])) # Now we know that arg_l[0] is SubroutineName
             self.objects.append(arg_l[1])
-            class_or_var = False
         elif isinstance(arg_l[1], Token) and arg_l[1].tokenType == "symbol" and arg_l[1].tokenValue == ".":
             self.objects.append(arg_l[0]) # It will remain ambiguous if this is a class or var name, oh well
             self.objects.append(arg_l[1])
@@ -140,13 +140,13 @@ class ExpressionListParse(Expression):
                 break
             else:
                 raise ParsingStructureNotFound("expressionList must be in the form of expression, expression, ...")
-        if comma and self.objects != []:
+        if comma:
             raise ParsingStructureNotFound("expressionList shouldn't end with ,")
 
-subroutine_call_example = [
-    Token(21, 2, "identifier", "draw"), # <identifier> draw </identifier>
-    Token(21, 3, "symbol", "("), # <symbol> ( </symbol>
-    Token(21, 4, "symbol", ")"), # <symbol> ) </symbol>
-    ]
-
-print(ExpressionParse(*subroutine_call_example))
+# subroutine_call_example = [
+#     Token(21, 2, "identifier", "draw"), # <identifier> draw </identifier>
+#     Token(21, 3, "symbol", "("), # <symbol> ( </symbol>
+#     Token(21, 4, "symbol", ")"), # <symbol> ) </symbol>
+#     ]
+#
+# print(ExpressionParse(*subroutine_call_example))

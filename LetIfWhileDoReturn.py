@@ -1,6 +1,7 @@
 from ParserClasses import Token, ParsingStructureNotFound
-from StatementParseClasses import Statement
-from ExpressionParseClasses import SubroutineCallParse
+from StatementParseClasses import Statement, StatementsParse
+from ExpressionParseClasses import SubroutineCallParse, ExpressionParse
+
 
 class LetStatementParse(Statement):
     parsing_structure_type = "letStatement"
@@ -52,73 +53,80 @@ class LetStatementParse(Statement):
 
 class IfStatementParse(Statement):
     parsing_structure_type = "ifStatement"
-    def __init__(self, if_statement, open_parenthesis, expression, close_parenthesis, open_brace, *args):
-        if not (isinstance(if_statement, Token) and if_statement.tokenType == "keyword" and if_statement.tokenValue == "if"):
-            raise ValueError("if must be keyword Token if")
-        if not (isinstance(open_parenthesis, Token) and open_parenthesis.tokenType == "symbol" and open_parenthesis.tokenValue == "("):
-            raise ValueError("open_parenthesis must be symbol Token (")
-        if not (isinstance(expression, Token) and expression.tokenType == "identifier"):
-            raise ValueError("expression must be ExpressionParse object")
-        if not (isinstance(close_parenthesis, Token) and close_parenthesis.tokenType == "symbol" and close_parenthesis.tokenValue == ")"):
-            raise ValueError("close_parenthesis must be symbol Token )")
-        if not (isinstance(open_brace, Token) and open_brace.tokenType == "symbol" and open_brace.tokenValue == "{"):
-            raise ValueError("open_brace must be symbol Token {")
-        self.objects = [if_statement, open_parenthesis, expression, close_parenthesis, open_brace]
-        close_brace = False
-        else_statement = False
-        else_open_brace = False
-        else_close_brace = False
-        for arg in args:
-            if not close_brace:
-                if isinstance(arg, Token) and arg.tokenType == "symbol" and arg.tokenValue == "}":
-                    close_brace = True
-                    self.objects.append(arg)
-                elif isinstance(arg, StatementParse):
-                    self.objects.append(arg)
-                else:
-                    raise ValueError("arg must be StatementParse object or }")
-            elif isinstance(arg, Token) and arg.tokenType == "keyword" and arg.tokenValue == "else" and not else_statement:
-                else_statement = True
-                self.objects.append(arg)
-            elif isinstance(arg, Token) and arg.tokenType == "symbol" and arg.tokenValue == "{" and else_statement and not else_open_brace:
-                else_open_brace = True
-                self.objects.append(arg)
-            if else_open_brace and not else_close_brace:
-                if isinstance(arg, Token) and arg.tokenType == "symbol" and arg.tokenValue == "}":
-                    else_close_brace = True
-                    self.objects.append(arg)
-                if isinstance(arg, StatementParse):
-                    self.objects.append(arg)
-                else:
-                    raise ValueError("arg must be StatementParse object or }")
-            else:
-                pass
-        if not close_brace:
-            raise ValueError("if statement needs close brace")
-
+    def __init__(self, *args):
+        arg_l = list(args)
+        self.objects = []
+        # if (expression) {statements}
+        # optional: else {statements}
+        if isinstance(arg_l[0], Token) and arg_l[0].tokenType == "keyword" and arg_l[0].tokenValue == "if":
+            self.objects.append(arg_l[0])
+        else:
+            raise ParsingStructureNotFound("first arg must be a keyword token if")
+        if isinstance(arg_l[1], Token) and arg_l[1].tokenType == "symbol" and arg_l[1].tokenValue == "(":
+            self.objects.append(arg_l[1])
+        else:
+            raise ParsingStructureNotFound("second arg must be a symbol token ( ")
+        try:
+            expression = ExpressionParse(*arg_l[2:])
+            self.objects.append(expression)
+            arg_l[2:] = [expression] + arg_l[len(expression.objects)+2:]
+        except ParsingStructureNotFound:
+            raise ParsingStructureNotFound("*arg_l[2:] must be a valid ExpressionParse")
+        # {statements}
+        if isinstance(arg_l[3], Token) and arg_l[3].tokenType == "symbol" and arg_l[3].tokenValue == "{":
+            self.objects.append(arg_l[3])
+        else:
+            raise ParsingStructureNotFound("fourth arg must be symbol token {")
+        # Statements might be empty
+        close_brace_index = 5 # If statements is empty this becomes 4
+        try:
+            statements = StatementsParse(*arg_l[4:])
+            self.objects.append(statements)
+            arg_l[4:] = [statements] + arg_l[len(statements.objects)+4:]
+        except ParsingStructureNotFound:
+            close_brace_index = 4
+        if isinstance(arg_l[close_brace_index], Token) and arg_l[close_brace_index].tokenType == "symbol" and arg_l[close_brace_index].tokenValue == "}":
+            self.objects.append(arg_l[close_brace_index])
+        else:
+            raise ParsingStructureNotFound(f"{close_brace_index+1}th arg must be symbol token close brace") # needs to be +1 because zero based index
+        if isinstance(arg_l[close_brace_index+1], Token) and arg_l[close_brace_index+1].tokenType == "keyword" and arg_l[close_brace_index+1].tokenValue == "else":
+            self.objects.append(arg_l[close_brace_index+1])
+        else:
+            return
+        # { statements }
 class WhileStatementParse(Statement):
     parsing_structure_type = "whileStatement"
-    def __init__(self, while_statement, open_parenthesis, expression, close_parenthesis, open_brace, *args):
+    def __init__(self, *args):
+        arg_l = list(args)
+        self.objects = []
+        # while ( expression ) { statements }
+        if isinstance(arg_l[0], Token) and arg_l[0].tokenType == "keyword" and arg_l[0].tokenValue == "while":
+            self.objects.append(arg_l[0])
+        else:
+            raise ParsingStructureNotFound("first arg must be keyword Token while")
+        if isinstance(arg_l[1], Token) and arg_l[1].tokenType == "symbol" and arg_l[1].tokenValue == "(":
+            self.objects.append(arg_l[1])
+        else:
+            raise ParsingStructureNotFound("second arg must be symbol Token (")
+        try:
+            expression = ExpressionParse(*arg_l[2:])
+            self.objects.append(expression)
+            arg_l[2:] = [expression] + arg_l[len(expression.objects)+2:]
+        except ParsingStructureNotFound:
+            raise ParsingStructureNotFound("*arg_l[2:] must make valid ExpressionParse object")
+        if isinstance(arg_l[3], Token) and arg_l[3].tokenType == "symbol" and arg_l[3].tokenValue == "{":
+            self.objects.append(arg_l[3])
+        else:
+            raise ParsingStructureNotFound("*arg_l[3] must be symbol Token {")
+        try:
+            statements = StatementsParse(*arg_l[4:])
+        except ParsingStructureNotFound:
+            raise ParsingStructureNotFound("*arg_l[4] must make valid Statements object")
+        self.objects.append(statements)
+        arg_l[4:] = [statements] + arg_l[len(statements.objects)+4:]
+        if isinstance(arg_l[5], Token) and arg_l[5].tokenType == "symbol" and arg_l[5].tokenValue == "}":
+            raise ParsingStructureNotFound("*arg_l[5] must be symbol Token }")
 
-        if not (isinstance(while_statement, Token) and while_statement.tokenType == "keyword" and while_statement.tokenValue == "while"):
-            raise ValueError("while must be keyword Token while")
-        if not (isinstance(open_parenthesis, Token) and open_parenthesis.tokenType == "symbol" and open_parenthesis.tokenValue == "("):
-            raise ValueError("open_parenthesis must be symbol Token (")
-        if not (isinstance(expression, Token) and expression.tokenType == "identifier"):
-            raise ValueError("expression must be ExpressionParse object")
-        if not (isinstance(close_parenthesis, Token) and close_parenthesis.tokenType == "symbol" and close_parenthesis.tokenValue == ")"):
-            raise ValueError("close_parenthesis must be symbol Token )")
-        if not (isinstance(open_brace, Token) and open_brace.tokenType == "symbol" and open_brace.tokenValue == "{"):
-            raise ValueError("open_brace must be symbol Token {")
-        self.objects = [while_statement, open_parenthesis, expression, close_parenthesis, open_brace]
-        for arg in args:
-            if isinstance(arg, Token) and arg.tokenType == "symbol" and arg.tokenValue == "}":
-                self.objects.append(arg)
-                break
-            elif isinstance(arg, StatementParse):
-                self.objects.append(arg)
-            else:
-                raise ValueError("arg must be StatementParse object or }")
 
 class DoStatementParse(Statement):
     """a do statement is do subroutineCall ;"""
@@ -141,6 +149,7 @@ class DoStatementParse(Statement):
         except ParsingStructureNotFound:
             raise ParsingStructureNotFound("*arg_l[1:] must make a valid SubroutineCall")
         arg_l[1:] = [subroutine_call] + arg_l[len(subroutine_call.objects)+1:]
+        self.objects.append(subroutine_call)
         
         # arg_l[2] must be ; symbol Token
         if isinstance(arg_l[2], Token) and arg_l[2].tokenType == "symbol" and arg_l[2].tokenValue == ";":
@@ -155,24 +164,24 @@ class ReturnStatementParse(Statement):
         arg_l = []
         for arg in args:
             arg_l.append(arg)
-        if not (isinstance(arg_l[0], Token) and arg_l[0].tokenType == "keyword" and arg_l[0].tokenValue == "return"):
-            raise ValueError("return_statement must 'return' keyword Token")
-        self.objects = [return_statement]
-        semicolon = False # Whether there has been a semicolon
-        expression = False # Whether there has been an expression before this is evaluated
-        for arg in args:
-            if isinstance(arg, Token) and arg.tokenType == "identifier" and not semicolon and not expression:
-                expression = True
-                self.objects.append(arg)
-            elif isinstance(arg, Token) and arg.tokenType == "symbol" and arg.tokenValue == ";" and not semicolon:
-                semicolon = True
-                self.objects.append(arg)
-            elif semicolon: # so it can accept trailing tokens
-                break
+        self.objects = []
+        if isinstance(arg_l[0], Token) and arg_l[0].tokenType == "keyword" and arg_l[0].tokenValue == "return":
+            self.objects.append(arg_l[0])
+        else:
+            raise ParsingStructureNotFound("arg_l[0] must be keyword Token return")
+        if isinstance(arg_l[1], Token) and arg_l[1].tokenType == "symbol" and arg_l[1].tokenValue == ";":
+            self.objects.append(arg_l[1])
+        else:
+            try:
+                expression = ExpressionParse(*arg_l[1:])
+            except ParsingStructureNotFound:
+                raise ParsingStructureNotFound("*arg_l[1:] must make a valid ExpressionParse or arg[1] must be ; symbol Token")
+            self.objects.append(expression)
+            arg_l[1:] = [expression] + arg_l[len(expression.objects)+1:]
+            if isinstance(arg_l[2], Token) and arg_l[2].tokenType == "symbol" and arg_l[2].tokenValue == ";":
+                self.objects.append(arg_l[2])
             else:
-                raise ValueError("Return statement must be in the form of return expression? ;")
-        if not semicolon:
-            raise ValueError("Return statement must have ; at end")
+                raise ParsingStructureNotFound("arg_l[2] must be symbol Token ;")
 
 from StatementParseClasses import StatementParse
 from ExpressionParseClasses import SubroutineCallParse
@@ -183,6 +192,12 @@ do_statement_example = [
     Token(21, 3, "symbol", "("), # <symbol> ( </symbol>
     Token(21, 4, "symbol", ")"), # <symbol> ) </symbol>
     Token(21, 5, "symbol", ";"), # <symbol> ; </symbol>
+]
+
+return_statement_example = [
+    Token(1,1,"keyword", "return"),
+    Token(1,1,"identifier", "x"),
+    Token(1,1,"symbol", ";"),
 ]
 
 print(DoStatementParse(*do_statement_example))

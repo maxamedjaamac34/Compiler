@@ -1,4 +1,5 @@
-from ParserClasses import ParsingStructure
+from ParserClasses import ParsingStructure, ParsingStructureNotFound
+
 
 # class list for import statements:
 # StatementParse, StatementsParse
@@ -18,11 +19,14 @@ class StatementParse(Statement):
 class StatementsParse(ParsingStructure):
     parsing_structure_type = "statements"
     def __init__(self, *args):
+        arg_l = list(args)
         self.objects = []
-        for arg in args:
-            if isinstance(arg, StatementParse):
-                self.objects.append(arg)
-            else:
-                break # This one is special because it could have nothing at all, returning an empty list for objects
+        for i in range(len(arg_l)):
+            try:
+                statement = StatementParse(*arg_l[i:])
+                self.objects.append(statement)
+                arg_l[i:] = [statement] + arg_l[len(statement.objects)+i:]
+            except ParsingStructureNotFound:
+                break
 
 from LetIfWhileDoReturn import LetStatementParse, IfStatementParse, WhileStatementParse, DoStatementParse, ReturnStatementParse
