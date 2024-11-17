@@ -1,20 +1,8 @@
-from SubroutineBodyParse import SubroutineBodyParse
-from ParserClasses import Token
-from ClassParse import ClassParse
-from VarOrClassVarDecParse import VarDecParse
-from ParameterListParse import ParameterListParse
-from IfStatementParse import IfStatementParse
-from LetStatementParse import LetStatementParse
-from ReturnStatementParse import ReturnStatementParse
-from WhileStatementParse import WhileStatementParse
-from DoStatementParse import DoStatementParse
-from SubroutineDecParse import SubroutineDecParse
-from VarOrClassVarDecParse import ClassVarDecParse
-from SubroutineCallParse import SubroutineCallParse
-from ExpressionListParse import ExpressionListParse
-from StatementParse import StatementParse
-from StatementsParse import StatementsParse
-from ExpressionParse import ExpressionParse
+from ParserClasses import *
+from ExpressionParseClasses import *
+from LetIfWhileDoReturn import *
+from ProgramStructureParseClasses import *
+from StatementParseClasses import *
 
 # try/except statements galore
 
@@ -27,6 +15,7 @@ from ExpressionParse import ExpressionParse
 # If it works for a given sublist, replace the elements of objects that match with matched.objects with matched, and break the for loop
 # If it doesn't work in the for loop, pass. If no list works, just return objects
 def try_parse(parse_class, objects: list, print_try_progress):
+    """Returns ..."""
     # print_try_progress is true if you want to print progress, false otherwise
     for l in range(len(objects)):
         try:
@@ -34,19 +23,19 @@ def try_parse(parse_class, objects: list, print_try_progress):
             matched = parse_class(*parse_objects)
             if print_try_progress:
                 print(f"{parse_class} object found at index {l}")
-            for i in matched.objects: # Removes the first instance of each object in matched.objects from objects
-                # If the classes were written correctly, this should just be removing stuff from the start of the list
-                for j in parse_objects:
-                    if i == j:
-                        parse_objects.remove(j)
-                        break
-            if not (isinstance(matched, StatementsParse) and matched.objects == []):
-                objects = objects[:l] + parse_objects
-                objects.insert(l, matched) # Adds the instance of parse_class that matched refers to, to the front of the list
-                if isinstance(matched, StatementParse):
-                    continue
-                else:
-                    break
+
+            # Remove the tokens / parse classes we just used and replace with the new parse class
+            parse_objects = parse_objects[len(matched.objects):]
+            parse_objects = [matched, *parse_objects]
+            # for i in matched.objects: # Removes the first instance of each object in matched.objects from parse_objects
+            #     # If the classes were written correctly, this should just be removing stuff from the start of the list
+            #     for j in parse_objects:
+            #         if i == j:
+                        # parse_objects.remove(j)
+                        # break
+            # if not (isinstance(matched, StatementsParse) and matched.objects == []):
+            #     objects = objects[:l] + parse_objects
+            #     objects.insert(l, matched) # Adds the instance of parse_class that matched refers to, to the front of the list
         except (ValueError, TypeError) as e:
             # Specific handling for ValueError and TypeError
             if print_try_progress:
@@ -55,8 +44,7 @@ def try_parse(parse_class, objects: list, print_try_progress):
         except Exception as e:
             # Catch-all for any other exceptions
             if print_try_progress:
-                print(f"Unexpected error for {parse_class} at index {l}: {e}")
-            pass
+                raise RuntimeError(f"Unexpected error for {parse_class} at index {l}: {e}")
     return objects
 
 # Put it all together now
@@ -67,7 +55,6 @@ def parse_jack_class(tokens: list, print_parse_progress):
     parsing_structures = [
         SubroutineBodyParse,
         SubroutineDecParse,
-        ParameterListParse,
         VarDecParse,
         ClassVarDecParse,
         StatementParse,
@@ -76,7 +63,8 @@ def parse_jack_class(tokens: list, print_parse_progress):
         ReturnStatementParse,
         IfStatementParse,
         WhileStatementParse,
-        SubroutineCallParse, # If not empty, requires type varName (, type varname)* ;
+        ParameterListParse,  # If not empty, requires type varName (, type varname)* ;
+        SubroutineCallParse,
 
         # ExpressionListParse, # If not empty, requires expression (, expression)*
         # ExpressionParse, # Placeholder is trivial - only an identifier
@@ -88,7 +76,7 @@ def parse_jack_class(tokens: list, print_parse_progress):
         # but that sort of trivial does not break try_parse
     ]
 
-    for i in range(1000):
+    for i in range(100):
         try:
             if print_parse_progress:
                 print("Trying to parse the class")

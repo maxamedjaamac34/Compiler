@@ -23,3 +23,6 @@ class ParsingStructure:  # The base class for all structures that include token 
         return f"""<{self.parsing_structure_type}>{objects_string}
 </{self.parsing_structure_type}>"""
 
+class ParsingStructureNotFound (ValueError):
+    pass
+
