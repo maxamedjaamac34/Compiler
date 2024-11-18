@@ -1,5 +1,4 @@
 from ParserClasses import Token, ParsingStructure, ParsingStructureNotFound
-from ProgramStructureParseClasses import SubroutineNameParse
 
 
 # class list for import statements:
@@ -150,3 +149,5 @@ class ExpressionListParse(Expression):
 #     ]
 #
 # print(ExpressionParse(*subroutine_call_example))
+
+from ProgramStructureParseClasses import SubroutineNameParse
