@@ -1,4 +1,5 @@
 from ParserClasses import ParsingStructure, ParsingStructureNotFound, Token
+from ProgramStructureParseClasses import SubroutineNameParse
 
 # class list for import statements:
 # StatementParse, StatementsParse
@@ -220,18 +221,29 @@ class ReturnStatementParse(Statement):
 
 from ExpressionParseClasses import SubroutineCallParse, ExpressionParse
 
+
 if_statement_example = [
     Token(1,1,"keyword", "if"),
     Token(1,1,"symbol", "("),
     Token(1,1,"identifier", "x"),
     Token(1,1,"symbol", ")"),
-    Token(1,1,"symbol", "{"),
+    Token(1,1,"symbol", "{"), # <symbol> ) </symbol>
+    Token(21, 5, "symbol", ";"), # <symbol> ; </symbol>
+    Token(1,1,"symbol", "}"),
+]
+
+return_statement_example = [
+    Token(1,1,"keyword", "return"),
+    Token(1,1,"identifier", "x"),
+    Token(1,1,"symbol", ";"),
+]
+
+do_statement_example = [
     Token(21, 1, "keyword", "do"), # <keyword> do </keyword>
     Token(21, 2, "identifier", "draw"), # <identifier> draw </identifier>
     Token(21, 3, "symbol", "("), # <symbol> ( </symbol>
     Token(21, 4, "symbol", ")"), # <symbol> ) </symbol>
     Token(21, 5, "symbol", ";"), # <symbol> ; </symbol>
-    Token(1,1,"symbol", "}"),
 ]
 
 print(IfStatementParse(*if_statement_example))

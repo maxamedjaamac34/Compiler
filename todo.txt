@@ -14,3 +14,8 @@ look at these modularly
 make a function that will just try to parse an if statement
 Start with the smallest thing you can
 Know what your expectations are so that you know how to approach fixing it when it doesn't do that
+
+push this 1
+push local 1
+add
+pop local 0
