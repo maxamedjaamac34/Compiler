@@ -338,3 +338,14 @@ do_statement_example = [
 
 print(IfStatementParse(*if_statement_example))
 
+
+
+let_statement_example = [
+    Token(21, 1, "keyword", "let"), # <keyword> let </keyword>
+    Token(21, 2, "identifier", "x"), # <identifier> x </identifier>
+    Token(21, 3, "symbol", "=",), # <symbol> = </symbol>
+    Token(21, 5, "symbol", "4"), # <integer> 5 </integer>
+    Token(21, 5, "symbol", ";"), # <symbol> ; </symbol>
+]
+
+print(LetStatementParse(*if_statement_example))
