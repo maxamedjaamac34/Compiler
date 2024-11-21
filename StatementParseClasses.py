@@ -48,10 +48,100 @@ class StatementsParse(ParsingStructure):
                 else:
                     raise ParsingStructureNotFound("There's no statements")
 
+#Now implemling the let statement parsing
 class LetStatementParse(Statement):
+    """Handles parsing for let statements: grammar of let stat: 'let' varName '['expression']' '=' expression ';'"""
     parsing_structure_type = "letStatement"
+
     def __init__(self, *args):
-        raise ParsingStructureNotFound("not implemented yet")
+        # Conveting args to a list for easy handling
+        arg_l = list(args)
+        self.objects = []  # To store parsed objects for the let statement
+
+        # check there are tokens given
+        if not arg_l:
+            raise ParsingStructureNotFound("letStatement not found: you've passed nothing into here")
+
+        # First token must be the 'let' keyword
+        if isinstance(arg_l[0], Token) and arg_l[0].tokenType == "keyword" and arg_l[0].tokenValue == "let":
+            self.objects.append(arg_l[0])  # Append the 'let' keyword token to objects
+        else:
+            raise ParsingStructureNotFound("First token must be 'let' keyword")
+
+        # Second token must be the variable name aka (identifier)
+        if isinstance(arg_l[1], Token) and arg_l[1].tokenType == "identifier":
+            self.objects.append(arg_l[1])  # Append the variable name token to objects
+        else:
+            raise ParsingStructureNotFound("arg_l[1]th token must be an identifier (variable name)")
+
+        # Keep track of the current position in the argument list
+        current_index = 2
+
+        # checking if there's an array access using [expression]
+        if (
+            current_index < len(arg_l)
+            and isinstance(arg_l[current_index], Token)
+            and arg_l[current_index].tokenType == "symbol"
+            and arg_l[current_index].tokenValue == "["
+        ):
+            # Append the '[' symbol token to objects
+            self.objects.append(arg_l[current_index])
+            current_index += 1  # Move to the next token
+
+            # Parse the expression inside the brackets
+            try:
+                array_expression = ExpressionParse(*arg_l[current_index:])
+                self.objects.append(array_expression)  # Append the parsed array expression
+                current_index += len(array_expression.objects)  # Move past the parsed expression
+            except ParsingStructureNotFound:
+                raise ParsingStructureNotFound("Invalid expression inside array brackets")
+
+            # Closing bracket must be present
+            if (
+                current_index < len(arg_l)
+                and isinstance(arg_l[current_index], Token)
+                and arg_l[current_index].tokenType == "symbol"
+                and arg_l[current_index].tokenValue == "]"
+            ):
+                self.objects.append(arg_l[current_index])  # Append the ']' barket symbol token to objects
+                current_index += 1  # Movingg to the next token
+            else:
+                raise ParsingStructureNotFound("You are missing closing ']' for array access")
+
+        # Next token must be the '=' symbol
+        if (
+            current_index < len(arg_l)
+            and isinstance(arg_l[current_index], Token)
+            and arg_l[current_index].tokenType == "symbol"
+            and arg_l[current_index].tokenValue == "="
+        ):
+            self.objects.append(arg_l[current_index])  # Append the '=' symbol token to objects
+            current_index += 1  # Move to the next token
+        else:
+            raise ParsingStructureNotFound("arg_l[current_index]th must be '=' symbol after variable name or array access")
+
+        # Parse the expression after the equal sing '=' ...
+        try:
+            expression = ExpressionParse(*arg_l[current_index:])
+            self.objects.append(expression)  # add the parsed expression ob objects list
+            current_index += len(expression.objects)  # Move past the parsed expression
+        except ParsingStructureNotFound:
+            raise ParsingStructureNotFound("Invalid expression after '=' in let statement")
+
+        # Last token must be the ';' symbol
+        if (
+            current_index < len(arg_l)
+            and isinstance(arg_l[current_index], Token)
+            and arg_l[current_index].tokenType == "symbol"
+            and arg_l[current_index].tokenValue == ";"
+        ):
+            self.objects.append(arg_l[current_index])  # Append the ';' symbol token to objects
+        else:
+            raise ParsingStructureNotFound("Missing ';' at the end of let statement")
+
+
+
+
 
 class IfStatementParse(Statement):
     parsing_structure_type = "ifStatement"
@@ -123,13 +213,13 @@ class IfStatementParse(Statement):
             raise ParsingStructureNotFound("Last token must be }")
 
 
-class WhileStatementParse(Statement):
+class WhileStatementParse(Statement):  # while ( expression ) { statements }
     parsing_structure_type = "whileStatement"
 
     def __init__(self, *args):
         arg_l = list(args)
         self.objects = []
-        # while ( expression ) { statements }
+       
         if not arg_l:
             raise ParsingStructureNotFound("whileStatement not found: you've passed nothing into here")
         if isinstance(arg_l[0], Token) and arg_l[0].tokenType == "keyword" and arg_l[0].tokenValue == "while":
@@ -160,7 +250,7 @@ class WhileStatementParse(Statement):
             raise ParsingStructureNotFound("*arg_l[5] must be symbol Token }")
 
 
-class DoStatementParse(Statement):
+class DoStatementParse(Statement): #do draw()
     """a do statement is do subroutineCall ;"""
     parsing_structure_type = "doStatement"
 
@@ -192,7 +282,7 @@ class DoStatementParse(Statement):
         else:
             raise ParsingStructureNotFound("arg_l[2] must be ; symbol Token")
 
-class ReturnStatementParse(Statement):
+class ReturnStatementParse(Statement): # retur; or return x;
     parsing_structure_type = "returnStatement"
     def __init__(self, *args):
         arg_l = []
