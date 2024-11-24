@@ -64,7 +64,7 @@ class ParameterListParse(ProgramStructure):
             elif var_dec:
                 break # to accept trailing tokens
             else:
-                raise ValueError("*args must be comma symbol Token, TypeParse, and VarNameParse alternating")
+                raise ParsingStructureNotFound("*args must be comma symbol Token, TypeParse, and VarNameParse alternating")
 
 class SubroutineBodyParse(ProgramStructure):
     parsing_structure_type = "subroutineBody"
@@ -150,11 +150,12 @@ class TypeParse(ProgramStructure):
 
 class VarNameParse(ProgramStructure):
     parsing_structure_type = "varName"
-    def __init__(self, identifier: Token, *args):
-        # args does nothing, this is so it accepts trailing tokens
-        if identifier.tokenType != "identifier":
-            raise ValueError("varName's identifier must be an identifier")
-        self.objects = [identifier]
+    def __init__(self, *args):
+        arg_l = list(args)
+        if isinstance(arg_l[0], Token) and arg_l[0].tokenType == "identifier":
+            self.objects = [arg_l[0]]
+        else:
+            raise ParsingStructureNotFound("first argument must be an identifier Token")
 
 class VarOrClassVarDecParse(ProgramStructure):
     # Super class to VarDecParse and ClassVarDecParse because they are almost exactly the same
@@ -212,3 +213,15 @@ class ClassNameParse(ProgramStructure):
         self.objects = [identifier]
 
 from StatementParseClasses import StatementParse
+from ExpressionParseClasses import TermParse
+
+
+term_example = [
+    Token(21, 1, "symbol", "["), # <symbol> [ </symbol>
+    Token(21, 2, "identifier", "x"), # <identifier> x </identifier>
+    Token(21, 3, "symbol", "<",), # <symbol> < </symbol>
+    Token(21, 5, "symbol", "4"), # <integer> 5 </integer>
+    Token(21, 5, "symbol", ";"), # <symbol> ; </symbol>
+]
+
+print(TermParse(*term_example))

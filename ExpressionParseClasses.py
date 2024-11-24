@@ -1,3 +1,4 @@
+
 from ParserClasses import Token, ParsingStructure, ParsingStructureNotFound
 
 
@@ -12,38 +13,175 @@ class ExpressionParse(ParsingStructure):
     # Placeholder - expressions are replaced with identifiers in the Expressionless versions of test files
     def __init__(self, *args):
         arg_l = list(args)
-        if isinstance(arg_l[0], Token) and arg_l[0].tokenType == "identifier":
-            self.objects = [arg_l[0]]
-        else:
-            raise ParsingStructureNotFound("identifier must be an identifier Token")
+        if not arg_l:
+            raise ParsingStructureNotFound ("you didn't pass anything in")
+        self.objects = []
+        last_term = False # This flag states if the last argument was a term.
+        # If it is true, the next argument should be an op.
+        # If it is false, the next argument should be a term.
+        for i in range(len(arg_l)):
+            if last_term:
+                try:
+                    op = OpParse(*arg_l[i:])
+                except ParsingStructureNotFound:
+                    break
+                last_term = False
+                self.objects.append(op)
+                arg_l[i:] = [op] + arg_l[i+len(op.objects):]
+            else:
+                try:
+                    term = TermParse(*arg_l[i:])
+                except ParsingStructureNotFound:
+                    break
+                last_term = True
+                self.objects.append(term)
+                arg_l[i:] = [term] + arg_l[i+len(term.objects):]
+        if not last_term:
+            raise ParsingStructureNotFound ("The last object in the expression must be a term")
 
 class TermParse(Expression):
     parsing_structure_type = "term"
     # This one is the part that's not LL1
+    def __init__(self, *args):
+        try:
+            term = self.varname_expression(*args)
+        except ParsingStructureNotFound:
+            pass
+        try:
+            term = self.parentheses_expression(*args)
+        except ParsingStructureNotFound:
+            pass
+        try:
+            term = self.unary_op_term()
+        except ParsingStructureNotFound:
+            pass
+        try:
+            term = self.subroutine_call()
+        except ParsingStructureNotFound:
+            pass
+        try:
+            term = self.var_name(*args)
+        except ParsingStructureNotFound:
+            pass
+        try:
+            term = self.token_term(*args)
+        except ParsingStructureNotFound:
+            raise ParsingStructureNotFound ("No term found")
+        self.objects = term
+
+
+    # Functions of term return list of the objects in the term
+    def varname_expression(self, *args):
+        # varName [ expression ]
+        arg_l = list(args)
+        objects = []
+        try:
+            var_name = VarNameParse(*arg_l)
+        except ParsingStructureNotFound:
+            raise ParsingStructureNotFound ("first arg must be a varName")
+        objects.append(var_name)
+        if isinstance(arg_l[1], Token) and arg_l[1].tokenType =="symbol" and arg_l[1].tokenValue == "[":
+            objects.append(arg_l[1])
+        else:
+            raise ParsingStructureNotFound ("second arg must be symbol token [")
+        try:
+            expression = ExpressionParse(*arg_l[2:])
+        except ParsingStructureNotFound:
+            raise ParsingStructureNotFound ("third arg to the end of the list must make valid ExpressionParse")
+        objects.append(expression)
+        arg_l[2:] = [expression] + arg_l[2+len(expression.objects):] # this makes it consume the tokens
+        if isinstance(arg_l[3], Token) and arg_l[3].tokenType =="symbol" and arg_l[3].tokenValue == "]":
+            objects.append(arg_l[3])
+        else:
+            raise ParsingStructureNotFound ("second arg must be symbol token ]")
+        return objects
+
+    def parentheses_expression(self, *args):
+        # ( expression )
+        arg_l = list(args)
+        objects = []
+        if isinstance(arg_l[0], Token) and arg_l[0].tokenType == "symbol" and arg_l[0].tokenValue == "(":
+            objects.append(arg_l[0])
+        else:
+            raise ParsingStructureNotFound ("first arg must be symbol token (")
+        try:
+            expression = ExpressionParse(*arg_l[1:])
+        except ParsingStructureNotFound:
+            raise ParsingStructureNotFound ("second arg to end of list must be valid ExpressionParse")
+        objects.append(expression)
+        arg_l[1:] = [expression] + arg_l[1+len(expression.objects):]
+        if isinstance(arg_l[2], Token) and arg_l[2].tokenType == "symbol" and arg_l[2].tokenValue == ")":
+            objects.append(arg_l[2])
+        else:
+            raise ParsingStructureNotFound("third arg must be symbol token )")
+        return objects
+
+    def unary_op_term(self, *args):
+        # unaryOp term
+        arg_l = list(args)
+        try:
+            unary_op = UnaryOpParse(*arg_l)
+        except ParsingStructureNotFound:
+            raise ParsingStructureNotFound ("first arg must be a unary_op")
+        arg_l = [unary_op] + arg_l[len(unary_op.objects):]
+        try:
+            term = TermParse(*arg_l[1:])
+        except ParsingStructureNotFound:
+            raise ParsingStructureNotFound ("second arg must be a term")
+        return [unary_op, term]
+    def subroutine_call(self, *args):
+        # subroutineCall
+        try:
+            subroutine_call = SubroutineCallParse(*args)
+        except ParsingStructureNotFound:
+            raise ParsingStructureNotFound ("No subroutine call found")
+        return [subroutine_call]
+    def var_name(self, *args):
+        # varName
+        try:
+            var_name = VarNameParse(*args)
+        except ParsingStructureNotFound:
+            raise ParsingStructureNotFound ("Not a VarNameParse")
+        return [var_name]
+    def token_term(self, *args):
+        # Token of type keyword, stringConstant, or integerConstant
+        arg_l = list(args)
+        token_types = ["keyword", "stringConstant", "integerConstant"]
+        if isinstance(arg_l[0], Token) and arg_l[0].tokenType in token_types:
+            return [arg_l[0]]
+        else:
+            raise ParsingStructureNotFound (f"not a Token of types {token_types}")
 
 class OpParse(Expression):
     parsing_structure_type = "op"
     def __init__(self, op, *args): # args does nothing, this is so it can accept trailing tokens
+        if not args:
+            raise ParsingStructureNotFound ("you didn't pass anything in")
         if op is Token and op.tokenType == "symbol" and op.tokenValue in ["+", "-", "*", "/", "&", "|", "<", ">", "="]:
             self.objects = [op]
         else:
-            raise ValueError("op must be symbol Token + - * / & | < > =")
+            raise ParsingStructureNotFound("op must be symbol Token + - * / & | < > =")
 
 class UnaryOpParse(Expression):
     parsing_structure_type = "unaryOp"
-    def __init__(self, op, *args): # args does nothing, this is so it can accept trailing tokens
-        if op is Token and op.tokenType == "symbol" and op.tokenValue in ["-", "~"]:
-            self.objects = op
+    def __init__(self, *args): # args does nothing, this is so it can accept trailing tokens
+        arg_l = list(args)
+        if not arg_l:
+            raise ParsingStructureNotFound ("you didn't pass anything in")
+        if arg_l[0] is Token and arg_l[0].tokenType == "symbol" and arg_l[0].tokenValue in ["-", "~"]:
+            self.objects = arg_l
         else:
-            raise ValueError("Unary operator must be symbol Token - or ~")
+            raise ParsingStructureNotFound("Unary operator must be symbol Token - or ~")
 
 class KeywordConstantParse(Expression):
     parsing_structure_type = "keywordConstant"
     def __init__(self, op, *args): # args does nothing, this is so it can accept trailing tokens
+        if not args:
+            raise ParsingStructureNotFound ("you didn't pass anything in")
         if op is Token and op.tokenType == "keyword" and op.tokenValue in ["true", "false", "null", "this"]:
             self.objects = op
         else:
-            raise ValueError("Keyword constant must be keyword Token true, false, null, this")
+            raise ParsingStructureNotFound("Keyword constant must be keyword Token true, false, null, this")
 
 class SubroutineCallParse(Expression):
     parsing_structure_type = "subroutineCall"
@@ -51,6 +189,8 @@ class SubroutineCallParse(Expression):
         arg_l = []
         for arg in args:
             arg_l.append(arg)
+        if not arg_l:
+            raise ParsingStructureNotFound ("you didn't pass anything in")
         self.objects = []
         if isinstance(arg_l[0], Token) and arg_l[0].tokenType == "identifier":
             pass # we do not know if this is className or varName or subroutineName yet.
@@ -118,6 +258,8 @@ class ExpressionListParse(Expression):
         arg_l = []
         for arg in args:
             arg_l.append(arg)
+        if not arg_l:
+            raise ParsingStructureNotFound ("you didn't pass anything in")
         expression = False # is the previous object an expression?
         comma = True # Is the previous object a comma? Assume a starting comma so first expression can be treated same as any else
         self.objects = []
@@ -150,4 +292,4 @@ class ExpressionListParse(Expression):
 #
 # print(ExpressionParse(*subroutine_call_example))
 
-from ProgramStructureParseClasses import SubroutineNameParse
+from ProgramStructureParseClasses import SubroutineNameParse, VarNameParse

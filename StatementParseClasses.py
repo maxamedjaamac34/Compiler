@@ -33,20 +33,15 @@ class StatementParse(Statement):
 class StatementsParse(ParsingStructure):
     parsing_structure_type = "statements"
     def __init__(self, *args):
-        theres_statements = False
         arg_l = list(args)
         self.objects = []
         for i in range(len(arg_l)):
             try:
                 statement = StatementParse(*arg_l[i:])
-                self.objects.append(statement)
-                arg_l[i:] = [statement] + arg_l[len(statement.objects)+i:]
-                theres_statements = True
             except ParsingStructureNotFound:
-                if theres_statements:
-                    break
-                else:
-                    raise ParsingStructureNotFound("There's no statements")
+                break
+            arg_l[i:] = [statement] + arg_l[i + len(statement.objects):]
+            self.objects.append(statement)
 
 #Now implemling the let statement parsing
 class LetStatementParse(Statement):
@@ -151,66 +146,56 @@ class IfStatementParse(Statement):
         # if (expression) {statements}
         # optional: else {statements}
         if not arg_l:
-            raise ParsingStructureNotFound("ifStatement not found: you've passed nothing into here")
+            raise ParsingStructureNotFound("IfStatement not found: you've passed nothing into here")
         if isinstance(arg_l[0], Token) and arg_l[0].tokenType == "keyword" and arg_l[0].tokenValue == "if":
             self.objects.append(arg_l[0])
         else:
-            raise ParsingStructureNotFound("first arg must be a keyword token if")
+            raise ParsingStructureNotFound("First argument must be 'if' keyword")
         if isinstance(arg_l[1], Token) and arg_l[1].tokenType == "symbol" and arg_l[1].tokenValue == "(":
             self.objects.append(arg_l[1])
         else:
-            raise ParsingStructureNotFound("second arg must be a symbol token ( ")
+            raise ParsingStructureNotFound("Second argument must be '(' symbol")
         try:
             expression = ExpressionParse(*arg_l[2:])
-            self.objects.append(expression)
-            arg_l[2:] = [expression] + arg_l[len(expression.objects)+2:]
         except ParsingStructureNotFound:
-            raise ParsingStructureNotFound("*arg_l[2:] must be a valid ExpressionParse")
+            raise ParsingStructureNotFound(f"Third argument to the end of the list must make a valid ExpressionParse. {[str(arg) for arg in arg_l[2:]]}")
+        self.objects.append(expression)
+        arg_l[2:] = [expression] + arg_l[len(expression.objects) + 2:]
         if isinstance(arg_l[3], Token) and arg_l[3].tokenType == "symbol" and arg_l[3].tokenValue == ")":
             self.objects.append(arg_l[3])
         else:
-            raise ParsingStructureNotFound("fourth arg must be symbol token ( ")
-        # {statements}
+            raise ParsingStructureNotFound("Fourth argument must be ')' symbol")
         if isinstance(arg_l[4], Token) and arg_l[4].tokenType == "symbol" and arg_l[4].tokenValue == "{":
             self.objects.append(arg_l[4])
+        else: #{statement;}
+            raise ParsingStructureNotFound("Fifth argument must be '{' symbol")
+        statements = StatementsParse(*arg_l[5:])
+        self.objects.append(statements)
+        arg_l[5:] = [statements] + arg_l[5+len(statements.objects):]
+        if isinstance(arg_l[6], Token) and arg_l[6].tokenType == "symbol" and arg_l[6].tokenValue == "}":
+            self.objects.append(arg_l[6])
         else:
-            raise ParsingStructureNotFound("fifth arg must be symbol token {")
-        # Statements might be empty
-        close_brace_index = 6 # If statements is empty this becomes 5
+            raise ParsingStructureNotFound(f"Seventh argument must be close brace symbol, not {arg_l[7]}")
         try:
-            statements = StatementsParse(*arg_l[5:])
-            self.objects.append(statements)
-            arg_l[5:] = [statements] + arg_l[len(statements.objects)+5:]
-        except ParsingStructureNotFound:
-            close_brace_index = 5
-        if isinstance(arg_l[close_brace_index], Token) and arg_l[close_brace_index].tokenType == "symbol" and arg_l[close_brace_index].tokenValue == "}":
-            self.objects.append(arg_l[close_brace_index])
-        else:
-            raise ParsingStructureNotFound(f"{close_brace_index+1}th arg must be symbol token close brace") # needs to be +1 because zero based index
-        try:
-            if isinstance(arg_l[close_brace_index+1], Token) and arg_l[close_brace_index+1].tokenType == "keyword" and arg_l[close_brace_index+1].tokenValue == "else":
-                self.objects.append(arg_l[close_brace_index+1])
+            if isinstance(arg_l[7], Token) and arg_l[7].tokenType == "keyword" and arg_l[7].tokenValue == "else":
+                self.objects.append(arg_l[7])
             else:
                 return
-        except IndexError: # if there's no else
+        except IndexError:
             return
-        # { statements }
-        if isinstance(arg_l[close_brace_index+2], Token) and arg_l[close_brace_index+2].tokenType == "symbol" and arg_l[close_brace_index+2].tokenValue == "{":
-            self.objects.append(arg_l[close_brace_index+2])
+        if isinstance(arg_l[8], Token) and arg_l[8].tokenType == "symbol" and arg_l[8].tokenValue == "{":
+            self.objects.append(arg_l[8])
         else:
-            raise ParsingStructureNotFound(f"{close_brace_index+3}th arg must be symbol token open brace")
-        # statements can be empty
-        else_close_index = close_brace_index + 4 # if there is no statements, this is close_brace_index+3
-        try:
-            statements = StatementsParse(*arg_l[close_brace_index+3:])
-            self.objects.append(statements)
-            arg_l[close_brace_index+3:] = [statements] + [len(statements.objects)+close_brace_index+3]
-        except ParsingStructureNotFound:
-            else_close_index = close_brace_index + 3
-        if isinstance(arg_l[else_close_index], Token) and arg_l[else_close_index].tokenType == "symbol" and arg_l[else_close_index].tokenValue == "}":
-            self.objects.append(arg_l[else_close_index])
+            raise ParsingStructureNotFound("Ninth argument must be '{' symbol")
+        else_statements = StatementsParse(*arg_l[9:])
+        self.objects.append(else_statements)
+        arg_l[9:] = [else_statements] + arg_l[9 + len(else_statements.objects):]
+        if isinstance(arg_l[10], Token) and arg_l[10].tokenType == "symbol" and arg_l[10].tokenValue == "}":
+            self.objects.append(arg_l[10])
         else:
-            raise ParsingStructureNotFound("Last token must be }")
+            raise ParsingStructureNotFound("Eleventh argument must be } symbol")
+
+
 
 
 class WhileStatementParse(Statement):  # while ( expression ) { statements }
@@ -318,7 +303,30 @@ if_statement_example = [
     Token(1,1,"identifier", "x"),
     Token(1,1,"symbol", ")"),
     Token(1,1,"symbol", "{"), # <symbol> ) </symbol>
-    Token(21, 5, "symbol", ";"), # <symbol> ; </symbol>
+    #Token(21, 5, "symbol", ";"), # <symbol> ; </symbol>
+    Token(1,1,"symbol", "}"),
+]
+
+if_else_statement_example = [
+    Token(1,1,"keyword", "if"),
+    Token(1,1,"symbol", "("),
+    Token(1,1,"identifier", "x"),
+    Token(1,1,"symbol", ")"),
+    Token(1,1,"symbol", "{"),
+
+    # Token(1, 1, "keyword", "if"),
+    # Token(1, 1, "symbol", "("),
+    # Token(1, 1, "identifier", "x"),
+    # Token(1, 1, "symbol", ")"),
+    # Token(1, 1, "symbol", "{"),  # <symbol> ) </symbol>
+    # #Token(21, 5, "symbol", ";"), # <symbol> ; </symbol>
+    # Token(1, 1, "symbol", "}"),
+     # <symbol> ) </symbol>
+
+    Token(1,1,"symbol", "}"),
+
+    Token(1,1,"keyword", "else"),
+    Token(1,1,"symbol", "{"), # <symbol> ) </symbol>
     Token(1,1,"symbol", "}"),
 ]
 
@@ -336,7 +344,7 @@ do_statement_example = [
     Token(21, 5, "symbol", ";"), # <symbol> ; </symbol>
 ]
 
-print(IfStatementParse(*if_statement_example))
+#print(IfStatementParse(*if_statement_example))
 
 
 
@@ -348,4 +356,4 @@ let_statement_example = [
     Token(21, 5, "symbol", ";"), # <symbol> ; </symbol>
 ]
 
-print(LetStatementParse(*if_statement_example))
+print(IfStatementParse(*if_else_statement_example))
