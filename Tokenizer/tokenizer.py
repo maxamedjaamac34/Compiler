@@ -1,9 +1,6 @@
-
-# Define keywords and symbols for the language (example list, can be extended)
-
 import sys
 
-# Define keywords and symbols for the language (example list, can be extended)
+# Define keywords and symbols for the language
 KEYWORDS = {"class", "constructor", "function", "method", "field", "static", "var", "int", "char", "boolean", "void", "true", "false", "null", "this", "let", "do", "if", "else", "while", "return"}
 SYMBOLS = {"{", "}", "(", ")", "[", "]", "+", "-", ".", ",", "*", "/", "&", "|", "<", ">", "~", ";", "="}
 
@@ -24,10 +21,43 @@ def add_token(line_no, column_no, token_type, token_value):
     """Helper function to create a Token and add it to the tokens list."""
     tokens.append(Token(line_no, column_no, token_type, token_value))
 
+def remove_comments(lines):
+    """Remove comments from the given lines."""
+    clean_lines = []
+    inside_multiline_comment = False
+
+    for line in lines:
+        if inside_multiline_comment:
+            end_comment_index = line.find("*/")
+            if end_comment_index != -1:
+                inside_multiline_comment = False
+                line = line[end_comment_index + 2:]
+            else:
+                continue
+
+        while "/*" in line:
+            start_comment_index = line.find("/*")
+            end_comment_index = line.find("*/", start_comment_index + 2)
+            if end_comment_index != -1:
+                line = line[:start_comment_index] + line[end_comment_index + 2:]
+            else:
+                line = line[:start_comment_index]
+                inside_multiline_comment = True
+                break
+
+        if not inside_multiline_comment:
+            single_comment_index = line.find("//")
+            if single_comment_index != -1:
+                line = line[:single_comment_index]
+
+        clean_lines.append(line)
+
+    return clean_lines
+
 def un_string_line(line, line_no):
     i = 0
     while i < len(line):
-        if line[i] == "\"":  # Detect a string constant
+        if line[i] == "\"":  # check for string constant
             opening_quote_index = i
             i += 1
             while i < len(line) and line[i] != "\"":
@@ -47,14 +77,14 @@ def un_string_line(line, line_no):
             i += 1
             continue
 
-        elif line[i].isdigit():  # Detect integer constants
+        elif line[i].isdigit():  # check integer constants
             start_index = i
             while i < len(line) and line[i].isdigit():
                 i += 1
             integer_constant = line[start_index:i]
             add_token(line_no, start_index, "integerConstant", integer_constant)
 
-        elif line[i].isalpha() or line[i] == "_":  # Detect identifiers and keywords
+        elif line[i].isalpha() or line[i] == "_":  # check identifiers and keywords
             start_index = i
             while i < len(line) and (line[i].isalnum() or line[i] == "_"):
                 i += 1
@@ -91,7 +121,8 @@ def main():
         # Open the input file and process each line
         with open(input_filename, "r") as file_input:
             code_lines = file_input.readlines()
-            for line_no, line in enumerate(code_lines, start=1):
+            clean_lines = remove_comments(code_lines)
+            for line_no, line in enumerate(clean_lines, start=1):
                 un_string_line(line, line_no)
 
         # Write the tokens to the XML file
