@@ -12,6 +12,13 @@ class ExpressionParse(ParsingStructure):
     parsing_structure_type = "expression"
     # Placeholder - expressions are replaced with identifiers in the Expressionless versions of test files
     def __init__(self, *args):
+        """expression: term (op term)*
+        Takes in any number of tokens. Starting at start of the list of arguments,
+            check if you can consume tokens to create every part of the expression.
+        If it doesn't create a valid ifStatement, raise ParsingStructureNotFound.
+        If it does, object is successfully initialized and filled with its objects
+        self.objects is the list of objects this object encompasses
+        If trailing tokens do not fit in the grammar definition, ignore them."""
         arg_l = list(args)
         if not arg_l:
             raise ParsingStructureNotFound ("you didn't pass anything in")
@@ -43,6 +50,14 @@ class TermParse(Expression):
     parsing_structure_type = "term"
     # This one is the part that's not LL1
     def __init__(self, *args):
+        """term: integerConstant | stringConstant | keywordConstant | varName |
+            varName '[' expression ']' | '(' expression ')' | (unaryOp term) | subroutineCall
+        Takes in any number of tokens. Starting at start of the list of arguments,
+            check if you can consume tokens to create every part of the expression.
+        If it doesn't create a valid ifStatement, raise ParsingStructureNotFound.
+        If it does, object is successfully initialized and filled with its objects
+        self.objects is the list of objects this object encompasses
+        If trailing tokens do not fit in the grammar definition, ignore them."""
         try:
             term = self.varname_expression(*args)
         except ParsingStructureNotFound:
@@ -175,7 +190,9 @@ class UnaryOpParse(Expression):
 
 class KeywordConstantParse(Expression):
     parsing_structure_type = "keywordConstant"
-    def __init__(self, op, *args): # args does nothing, this is so it can accept trailing tokens
+    def __init__(self, *args):
+        arg_l = list(args)
+        op = arg_l[0]
         if not args:
             raise ParsingStructureNotFound ("you didn't pass anything in")
         if op is Token and op.tokenType == "keyword" and op.tokenValue in ["true", "false", "null", "this"]:
@@ -184,6 +201,14 @@ class KeywordConstantParse(Expression):
             raise ParsingStructureNotFound("Keyword constant must be keyword Token true, false, null, this")
 
 class SubroutineCallParse(Expression):
+    """subroutineCall: subroutineName '(' expressionList ')' |
+        (className | varName) '.' subroutineName '(' expressionList ')'
+    Takes in any number of tokens. Starting at start of the list of arguments,
+        check if you can consume tokens to create every part of the subroutineCall.
+    If it doesn't create a valid ifStatement, raise ParsingStructureNotFound.
+    If it does, object is successfully initialized and filled with its objects
+    self.objects is the list of objects this object encompasses
+    If trailing tokens do not fit in the grammar definition, ignore them."""
     parsing_structure_type = "subroutineCall"
     def __init__(self, *args):
         arg_l = []
@@ -253,6 +278,13 @@ class SubroutineCallParse(Expression):
             else: raise ParsingStructureNotFound(f"*arg_l[{close_paren_index}] must be symbol Token )")
 
 class ExpressionListParse(Expression):
+    """expressionList: (expression (',' expression)*)?
+    Takes in any number of tokens. Starting at start of the list of arguments,
+        check if you can consume tokens to create every part of the expressionList.
+    If it doesn't create a valid ifStatement, raise ParsingStructureNotFound.
+    If it does, object is successfully initialized and filled with its objects
+    self.objects is the list of objects this object encompasses
+    If trailing tokens do not fit in the grammar definition, ignore them."""
     parsing_structure_type = "expressionList"
     def __init__(self, *args):
         arg_l = []
