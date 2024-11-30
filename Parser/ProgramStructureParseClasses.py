@@ -1,4 +1,4 @@
-from ParserClasses import ParsingStructure, Token, ParsingStructureNotFound
+from Parser.ParserClasses import ParsingStructure, Token, ParsingStructureNotFound
 
 
 # class list for import statements
@@ -185,7 +185,7 @@ class ClassNameParse(ProgramStructure):
         self.objects = [arg_l[0]]
 
 from StatementParseClasses import StatementParse
-from ExpressionParseClasses import TermParse
+from Parser.Parser import TermParse
 
 
 term_example = [

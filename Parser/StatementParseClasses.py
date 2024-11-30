@@ -1,5 +1,5 @@
-from ParserClasses import ParsingStructure, ParsingStructureNotFound, Token
-from ProgramStructureParseClasses import SubroutineNameParse
+from Parser.ParserClasses import ParsingStructure, ParsingStructureNotFound, Token
+
 
 # class list for import statements:
 # StatementParse, StatementsParse
@@ -337,7 +337,7 @@ class ReturnStatementParse(Statement): # return; or return x;
             else:
                 raise ParsingStructureNotFound("arg_l[2] must be symbol Token ;")
 
-from ExpressionParseClasses import SubroutineCallParse, ExpressionParse
+from Parser.Parser import SubroutineCallParse, ExpressionParse
 
 
 if_statement_example = [

@@ -1,10 +1,4 @@
-from ParserClasses import Token, ParsingStructureNotFound
-from StatementParseClasses import Statement
-from ExpressionParseClasses import SubroutineCallParse, ExpressionParse
-
-
-from StatementParseClasses import StatementsParse
-from ExpressionParseClasses import SubroutineCallParse
+from ParserClasses import Token
 
 do_statement_example = [
     Token(21, 1, "keyword", "do"), # <keyword> do </keyword>
