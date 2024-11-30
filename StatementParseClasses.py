@@ -9,8 +9,14 @@ class Statement(ParsingStructure):
 
 class StatementParse(Statement):
     parsing_structure_type = "statement"
-    def __init__(self, statement, *args):
-        # *args lets it take trailing tokens
+    def __init__(self, *args):
+        """statement: letStatement | ifStatement | whileStatement | doStatement | returnStatement
+        Takes in any number of tokens. Starting at start of the list of arguments,
+            check if you can consume tokens to create every part of the statement.
+        If it doesn't create a valid ifStatement, raise ParsingStructureNotFound.
+        If it does, object is successfully initialized and filled with its objects
+        self.objects is the list of objects this object encompasses
+        If trailing tokens do not fit in the grammar definition, ignore them."""
         arg_l = list(args)
         try:
             statement = LetStatementParse(*arg_l)
@@ -33,6 +39,11 @@ class StatementParse(Statement):
 class StatementsParse(ParsingStructure):
     parsing_structure_type = "statements"
     def __init__(self, *args):
+        """statements: statement*
+        Takes in any number of tokens. Check if the beginning of the list of arguments can create a valid statements.
+        In this special case, make Statement objects consuming the list of arguments until you cannot, and then break
+        If the beginning of the list of arguments cannot create a valid statement object, self.objects is empty list.
+        self.objects is the list of objects this object encompasses"""
         arg_l = list(args)
         self.objects = []
         for i in range(len(arg_l)):
@@ -43,13 +54,18 @@ class StatementsParse(ParsingStructure):
             arg_l[i:] = [statement] + arg_l[i + len(statement.objects):]
             self.objects.append(statement)
 
-#Now implemling the let statement parsing
 class LetStatementParse(Statement):
-    """Handles parsing for let statements: grammar of let stat: 'let' varName '['expression']' '=' expression ';'"""
+    """letStatement: 'let' varName ('[' expression ']')? '=' expression ';'
+    Takes in any number of tokens. Starting at start of the list of arguments,
+        check if you can consume tokens to create every part of the letStatement.
+    If it doesn't create a valid statement, raise ParsingStructureNotFound.
+    If it does, object is successfully initialized and filled with its objects
+    self.objects is the list of objects this object encompasses
+    If trailing tokens do not fit in the grammar definition, ignore them."""
     parsing_structure_type = "letStatement"
 
     def __init__(self, *args):
-        # Conveting args to a list for easy handling
+        # Converting args to a list for easy handling
         arg_l = list(args)
         self.objects = []  # To store parsed objects for the let statement
 
@@ -98,8 +114,8 @@ class LetStatementParse(Statement):
                 and arg_l[current_index].tokenType == "symbol"
                 and arg_l[current_index].tokenValue == "]"
             ):
-                self.objects.append(arg_l[current_index])  # Append the ']' barket symbol token to objects
-                current_index += 1  # Movingg to the next token
+                self.objects.append(arg_l[current_index])  # Append the ']' bracket symbol token to objects
+                current_index += 1  # Moving to the next token
             else:
                 raise ParsingStructureNotFound("You are missing closing ']' for array access")
 
@@ -141,6 +157,13 @@ class LetStatementParse(Statement):
 class IfStatementParse(Statement):
     parsing_structure_type = "ifStatement"
     def __init__(self, *args):
+        """ifStatement: 'if' '(' expression ')' '{' statements '}' ('else' '{' statements '}')?
+        Takes in any number of tokens. Starting at start of the list of arguments,
+            check if you can consume tokens to create every part of the ifStatement.
+        If it doesn't create a valid ifStatement, raise ParsingStructureNotFound.
+        If it does, object is successfully initialized and filled with its objects
+        self.objects is the list of objects this object encompasses
+        If trailing tokens do not fit in the grammar definition, ignore them."""
         arg_l = list(args)
         self.objects = []
         # if (expression) {statements}
@@ -202,6 +225,13 @@ class WhileStatementParse(Statement):  # while ( expression ) { statements }
     parsing_structure_type = "whileStatement"
 
     def __init__(self, *args):
+        """whileStatement: 'while' '(' expression ')' '{' statements '}'
+        Takes in any number of tokens. Starting at start of the list of arguments,
+            check if you can consume tokens to create every part of the whileStatement.
+        If it doesn't create a valid ifStatement, raise ParsingStructureNotFound.
+        If it does, object is successfully initialized and filled with its objects
+        self.objects is the list of objects this object encompasses
+        If trailing tokens do not fit in the grammar definition, ignore them."""
         arg_l = list(args)
         self.objects = []
        
@@ -236,7 +266,13 @@ class WhileStatementParse(Statement):  # while ( expression ) { statements }
 
 
 class DoStatementParse(Statement): #do draw()
-    """a do statement is do subroutineCall ;"""
+    """doStatement: 'do' subroutineCall ';'
+        Takes in any number of tokens. Starting at start of the list of arguments,
+            check if you can consume tokens to create every part of the doStatement.
+        If it doesn't create a valid ifStatement, raise ParsingStructureNotFound.
+        If it does, object is successfully initialized and filled with its objects
+        self.objects is the list of objects this object encompasses
+        If trailing tokens do not fit in the grammar definition, ignore them."""
     parsing_structure_type = "doStatement"
 
     def __init__(self, *args):  # do subroutineCall ;
@@ -267,9 +303,16 @@ class DoStatementParse(Statement): #do draw()
         else:
             raise ParsingStructureNotFound("arg_l[2] must be ; symbol Token")
 
-class ReturnStatementParse(Statement): # retur; or return x;
+class ReturnStatementParse(Statement): # return; or return x;
     parsing_structure_type = "returnStatement"
     def __init__(self, *args):
+        """returnStatement: 'return' expression? ';'
+        Takes in any number of tokens. Starting at start of the list of arguments,
+            check if you can consume tokens to create every part of the returnStatement.
+        If it doesn't create a valid ifStatement, raise ParsingStructureNotFound.
+        If it does, object is successfully initialized and filled with its objects
+        self.objects is the list of objects this object encompasses
+        If trailing tokens do not fit in the grammar definition, ignore them."""
         arg_l = []
         for arg in args:
             arg_l.append(arg)
