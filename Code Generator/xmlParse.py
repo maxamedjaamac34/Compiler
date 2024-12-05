@@ -35,7 +35,7 @@ def xml_parse(filename):
             jack_subroutine = JackSubroutine(child[0], child[1].text, child[2].text)
             for s_child in child: # s_child = subroutineDec child
                 if s_child.tag == "parameterList":
-                    for i in range(len(s_child.iterchildren())):
+                    for i in range(len(s_child)):
                         if i == 0:
                             continue
                         if s_child[i].tag == "identifier" and s_child[i-1].tag in ["identifier", "keyword"]:
