@@ -1,0 +1,78 @@
+class Wheel {
+    field int x;
+    field int y;
+    static boolean s;
+
+    constructor Wheel new(int z){
+        var int key;
+        var boolean exit;
+        // other code in constructor
+        return this;
+    }
+
+    // other functions/methods
+
+}
+
+<class>
+    <keyword> class </keyword>
+    <identifier> Wheel </identifier>
+    <symbol> { </symbol>
+    <classVarDec>
+        <keyword> field </keyword>
+        <keyword> int </keyword>
+        <identifier> x </identifier>
+        <symbol> ; </symbol>
+    </classVarDec>
+    <classVarDec>
+        <keyword> field </keyword>
+        <keyword> int </keyword>
+        <identifier> y </identifier>
+        <symbol> ; </symbol>
+    </classVarDec>
+    <classVarDec>
+        <keyword> static </keyword>
+        <keyword> boolean </keyword>
+        <identifier> s </identifier>
+        <symbol> ; </symbol>
+    </classVarDec>
+    <subroutineDec>
+        <keyword> constructor </constructor>
+        <identifier> Wheel </identifier>
+        <identifier> new </identifier>
+        <symbol> ( </symbol>
+        <parameterList>
+            <keyword> int </keyword>
+            <identifier> z </identifier>
+        </parameterList>
+        <symbol> ) </symbol>
+        <subroutineBody>
+            <symbol> { </symbol>
+            <varDec>
+                <keyword> var </keyword>
+                <keyword> int </keyword>
+                <identifier> key </identifier>
+                <symbol> ; </symbol>
+            </varDec>
+            <varDec>
+                <keyword> var </keyword>
+                <keyword> boolean </keyword>
+                <identifier> exit </identifier>
+                <symbol> ; </symbol>
+            </varDec>
+            <statements>
+                <returnStatement>
+                    <keyword> return </keyword>
+                    <expression>
+                        <term>
+                            <keyword> this </keyword>
+                        </term>
+                    </expression>
+                    <symbol> ; </symbol>
+                </returnStatement>
+            </statements>
+            <symbol> } </symbol>
+        </subroutineBody>
+    </subroutineDec>
+    <symbol> } </symbol>
+</class>
