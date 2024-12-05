@@ -1,0 +1,85 @@
+<!-- (-b + Math.sqrt(b * b - (4 * a * c))) / (2 * a) -->
+
+<expression>
+    <term>
+        <symbol>(</symbol>
+        <expression>
+            <term>
+                <unaryOp>
+                    <symbol> - </symbol>
+                </unaryOp>
+                <term>
+                    <identifier> b </identifier>
+                </term>
+            </term>
+            <op>
+                <symbol> + </symbol>
+            </op>
+            <term>
+                <subroutineCall>
+                    <identifier> Math </identifier>
+                    <symbol> . </symbol>
+                    <identifier> sqrt </identifier>
+                    <symbol> ( </symbol>
+                        <expressionList>
+                            <expression>
+                                <term>
+                                    <identifier> b </identifier>
+                                </term>
+                                <op>
+                                    <symbol> * </symbol>
+                                </op>
+                                <term>
+                                    <identifier> b </identifier>
+                                </term>
+                                <op>
+                                    <symbol> - </symbol>
+                                </op>
+                                <term>
+                                    <symbol> ( </symbol>
+                                    <expression>
+                                        <term>
+                                            <integerConstant> 4 </integerConstant>
+                                        </term>
+                                        <op>
+                                            <symbol> * </symbol>
+                                        </op>
+                                        <term>
+                                            <identifier> a </identifier>
+                                        </term>
+                                        <op>
+                                            <symbol> * </symbol>
+                                        </op>
+                                        <term>
+                                            <identifier> c </identifier>
+                                        </term>
+                                    </expression>
+                                    <symbol> ) </symbol>
+                                </term>
+                            </expression>
+                        </expressionList>
+                    <symbol> ) </symbol>
+                </subroutineCall>
+            </term>
+        </expression>
+        <symbol> ) </symbol>
+    </term>
+    <op>
+        <symbol> / </symbol>
+    </op>
+    <term>
+        <symbol> ( </symbol>
+            <expression>
+                <term>
+                    <integerConstant> 2 </integerConstant>
+                </term>
+                <op>
+                    <symbol> * </symbol>
+                </op>
+                <term>
+                    <identifier> a </identifier>
+                </term>
+            </expression>
+        <symbol> ) </symbol>
+    </term>
+</expression>
